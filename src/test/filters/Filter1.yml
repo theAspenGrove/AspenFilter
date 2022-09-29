@@ -1,5 +1,5 @@
 placeHolder: "BUNGEE-SECRET"
-lineNumber: 3
 secret: "apples"
 filePath: "test.txt"
+lineNumber: 3
 

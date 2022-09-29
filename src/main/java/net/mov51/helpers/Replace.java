@@ -13,51 +13,53 @@ import static net.mov51.helpers.YamlHelpers.filters;
 public class Replace {
     public static void censorFiles(){
         for(Filter filter: filters){
-            System.out.println("Censoring file: " + filter.filePath);
-            System.out.println(filter.placeHolder + "*");
-            System.out.println(filter.filePath);
+            String activeFileID = filter.filePath + ":" + filter.lineNumber;
+            System.out.println("Censoring file: " + activeFileID);
+            System.out.println(filter.placeHolder + " *");
             System.out.println(filter.secret);
+            System.out.println(filter.filePath);
             System.out.println(filter.lineNumber);
             System.out.println("---");
-            if(ReplaceLine(filter.lineNumber, filter.filePath, filter.placeHolder, filter.secret)){
-                System.out.println("File " + filter.filePath + " was not censored!");
+            if(ReplaceLine(filter.lineNumber, filter.filePath, filter.placeHolder, filter.secret, activeFileID)){
+                System.out.println("File " + activeFileID+ " was not censored!");
             }
         }
     }
 
     public static void openFiles(){
         for(Filter filter: filters){
-            System.out.println("Opening file: " + filter.filePath);
+            String activeFileID = filter.filePath + ":" + filter.lineNumber;
+            System.out.println("Opening file: " + activeFileID);
             System.out.println(filter.placeHolder);
+            System.out.println(filter.secret + " *");
             System.out.println(filter.filePath);
-            System.out.println(filter.secret + "*");
             System.out.println(filter.lineNumber);
             System.out.println("---");
-            if(ReplaceLine(filter.lineNumber, filter.filePath, filter.secret, filter.placeHolder)){
-                System.out.println("File " + filter.filePath + " was not opened!");
+            if(ReplaceLine(filter.lineNumber, filter.filePath, filter.secret, filter.placeHolder, activeFileID)){
+                System.out.println("File " + activeFileID + " was not opened!");
             }
         }
     }
 
 
-    public static boolean ReplaceLine(int line, String path, String target, String replacement){
+    public static boolean ReplaceLine(int line, String path, String target, String replacement, String activeFileID){
         try (Stream<String> all_lines = Files.lines(Paths.get(path))) {
             String input = all_lines.skip(line).findFirst().get();
-            System.out.println(input);
+            System.out.println("input: "+ input);
             String output = input.replace(replacement,target);
-            System.out.println(output + "*");
+            System.out.println("output: "+ output + " *");
             System.out.println("---");
             WriteLine(line,path,output);
             return input.equals(output);
 
         }catch (NoSuchElementException e){
-            System.out.println("Line not found");
-            System.out.println("This file will not be modified!");
+            System.out.println("Line "+ line +" not found");
+            System.out.println(activeFileID +" will not be modified!");
             System.out.println("---");
             return true;
         }catch (IOException e){
             System.out.println("Error reading file: " + path);
-            System.out.println("This file will not be modified!");
+            System.out.println(activeFileID + " will not be modified!");
             System.out.println("---");
             return true;
         }
