@@ -6,5 +6,13 @@ public class Filter {
     public String filePath;
     public int lineNumber;
 
+    public void printOut(){
+        System.out.println(this.placeHolder);
+        System.out.println(this.secret);
+        System.out.println(this.filePath);
+        System.out.println(this.lineNumber);
+        System.out.println("---");
+    }
+
 }
 

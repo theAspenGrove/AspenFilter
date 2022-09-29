@@ -7,12 +7,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class YamlHelpers {
-
+public class fileUtil {
     public static List<Filter> filters = new ArrayList<>();
+
+    public static void WriteLine(int line, String filePath, String newLine) throws IOException {
+        Path path = Paths.get(filePath);
+        List<String> lines = Files.readAllLines(path);
+        lines.set(line, newLine);
+        Files.write(path, lines);
+    }
+
     public static void loadYaml(){
         int totalFiles = 0;
         System.out.println("Loading filters");
@@ -33,5 +42,5 @@ public class YamlHelpers {
                 }
             }
         System.out.println("Loaded "+ filters.size() + " filters out of " + totalFiles + " files.");
-        }
     }
+}
