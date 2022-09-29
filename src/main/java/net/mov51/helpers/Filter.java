@@ -14,5 +14,9 @@ public class Filter {
         System.out.println("---");
     }
 
+    public int getAdjustedLine(){
+        return this.lineNumber - 1;
+    }
+
 }
 

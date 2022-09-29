@@ -12,10 +12,10 @@ import static net.mov51.helpers.fileUtil.WriteLine;
 public class Replace {
     public static void censorFiles(){
         for(Filter filter: filters){
-            String activeFileID = filter.filePath + ":" + filter.lineNumber;
+            String activeFileID = filter.filePath + ":" + filter.getAdjustedLine();
             System.out.println("Censoring file: " + activeFileID);
             filter.printOut();
-            if(ReplaceLine(filter.lineNumber, filter.filePath, filter.placeHolder, filter.secret, activeFileID)){
+            if(ReplaceLine(filter.getAdjustedLine(), filter.filePath, filter.secret, filter.placeHolder,  activeFileID)){
                 System.out.println("File " + activeFileID+ " was not censored!");
             }
         }
@@ -23,10 +23,10 @@ public class Replace {
 
     public static void openFiles(){
         for(Filter filter: filters){
-            String activeFileID = filter.filePath + ":" + filter.lineNumber;
+            String activeFileID = filter.filePath + ":" + filter.getAdjustedLine();
             System.out.println("Opening file: " + activeFileID);
             filter.printOut();
-            if(ReplaceLine(filter.lineNumber, filter.filePath, filter.secret, filter.placeHolder, activeFileID)){
+            if(ReplaceLine(filter.getAdjustedLine(), filter.filePath, filter.placeHolder, filter.secret, activeFileID)){
                 System.out.println("File " + activeFileID + " was not opened!");
             }
         }
@@ -36,7 +36,7 @@ public class Replace {
         try (Stream<String> all_lines = Files.lines(Paths.get(path))) {
             String input = all_lines.skip(line).findFirst().get();
             System.out.println("input: "+ input);
-            String output = input.replace(replacement,target);
+            String output = input.replace(target,replacement);
             System.out.println("output: "+ output + " *");
             System.out.println("---");
             WriteLine(line,path,output);
