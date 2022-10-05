@@ -15,6 +15,8 @@ import java.util.List;
 public class fileUtil {
     public static List<Filter> filters = new ArrayList<>();
 
+    public static String defaultFilePath = "filters/";
+
     public static void WriteLine(int line, String filePath, String newLine) throws IOException {
         Path path = Paths.get(filePath);
         List<String> lines = Files.readAllLines(path);
@@ -22,11 +24,11 @@ public class fileUtil {
         Files.write(path, lines);
     }
 
-    public static void loadYaml(){
+    public static void loadYaml(String filePath){
         int totalFiles = 0;
         System.out.println("Loading filters");
         Yaml yaml = new Yaml(new Constructor(Filter.class));
-            File dir = new File("filters/");
+            File dir = new File(filePath);
             File[] directoryListing = dir.listFiles();
             if (directoryListing != null) {
                 for (File child : directoryListing) {
