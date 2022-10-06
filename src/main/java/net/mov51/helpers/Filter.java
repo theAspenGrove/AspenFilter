@@ -7,6 +7,7 @@ public class Filter {
     public String secret;
     public String filePath;
     public int lineNumber;
+    public boolean filtered;
 
     public void printOut(){
         System.out.println(this.placeHolder);
@@ -16,22 +17,16 @@ public class Filter {
         System.out.println("---");
     }
 
-    public int getAdjustedLine(){
-        return this.lineNumber - 1;
+    public void setFiltered(boolean filtered){
+        this.filtered = filtered;
     }
 
-    public static void run(String state,String filePath){
-        if(state.equals("open")){
-            loadYaml(filePath);
-            System.out.println("Censoring files");
-            net.mov51.helpers.Replace.openFiles();
-        }else if(state.equals("censor")){
-            loadYaml(filePath);
-            System.out.println("Censoring files");
-            net.mov51.helpers.Replace.censorFiles();
-        }else{
-            System.out.println("Invalid argument");
-        }
+    public String getUUID(){
+        return this.filePath + ":" + this.lineNumber + " " + this.placeHolder;
+    }
+
+    public int getAdjustedLine(){
+        return this.lineNumber - 1;
     }
 
 

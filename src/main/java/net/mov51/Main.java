@@ -4,6 +4,7 @@ import java.io.File;
 
 import static net.mov51.helpers.Filter.*;
 import static net.mov51.helpers.fileUtil.defaultFilePath;
+import static net.mov51.helpers.fileUtil.loadYaml;
 
 public class Main {
     public static void main(String[] args){
@@ -21,6 +22,20 @@ public class Main {
             System.out.println("Please specify 'open' or 'censor'");
             System.out.println("open: uncensor files");
             System.out.println("censor: censor files");
+        }
+    }
+
+    public static void run(String state,String filePath){
+        if(state.equals("open")){
+            loadYaml(filePath);
+            System.out.println("Censoring files");
+            net.mov51.helpers.Replace.openFiles();
+        }else if(state.equals("censor")){
+            loadYaml(filePath);
+            System.out.println("Censoring files");
+            net.mov51.helpers.Replace.censorFiles();
+        }else{
+            System.out.println("Invalid argument");
         }
     }
 
