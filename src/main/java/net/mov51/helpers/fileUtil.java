@@ -12,9 +12,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.mov51.Main.logger;
+
 public class fileUtil {
     public static List<Filter> filters = new ArrayList<>();
-
     public static String defaultFilePath = "filters/";
 
     public static void WriteLine(int line, String filePath, String newLine) throws IOException {
@@ -26,7 +27,7 @@ public class fileUtil {
 
     public static void loadYaml(String filePath){
         int totalFiles = 0;
-        System.out.println("Loading filters");
+        logger.info("Loading filters");
         Yaml yaml = new Yaml(new Constructor(Filter.class));
             File dir = new File(filePath);
             File[] directoryListing = dir.listFiles();
@@ -37,12 +38,12 @@ public class fileUtil {
                         Filter filter = yaml.loadAs(in, Filter.class);
                         filters.add(filter);
                     }catch (IOException e){
-                        System.out.println("Error loading filter named: " + child.getName());
-                        System.out.println("This filter will not be run!");
+                        logger.error("Error loading filter named: " + child.getName());
+                        logger.error("This filter will not be run!");
                         e.printStackTrace();
                     }
                 }
             }
-        System.out.println("Loaded "+ filters.size() + " filters out of " + totalFiles + " files.");
+        logger.info("Loaded "+ filters.size() + " filters out of " + totalFiles + " files.");
     }
 }

@@ -1,5 +1,6 @@
 package net.mov51.helpers;
 
+import static net.mov51.Main.logger;
 import static net.mov51.helpers.fileUtil.loadYaml;
 
 public class Filter {
@@ -10,11 +11,11 @@ public class Filter {
     public boolean filtered;
 
     public void printOut(){
-        System.out.println(this.placeHolder);
-        System.out.println(this.secret);
-        System.out.println(this.filePath);
-        System.out.println(this.lineNumber);
-        System.out.println("---");
+        logger.debug(this.placeHolder);
+        logger.debug(this.secret);
+        logger.debug(this.filePath);
+        logger.debug(this.lineNumber);
+        logger.debug("---");
     }
 
     public void setFiltered(boolean filtered){

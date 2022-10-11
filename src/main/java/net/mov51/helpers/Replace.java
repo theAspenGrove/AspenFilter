@@ -6,18 +6,19 @@ import java.nio.file.Paths;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
+import static net.mov51.Main.logger;
 import static net.mov51.helpers.fileUtil.filters;
 import static net.mov51.helpers.fileUtil.WriteLine;
 
 public class Replace {
     public static void censorFiles(){
         for(Filter filter: filters){
-            System.out.println("Censoring file: " + filter.getUUID());
+            logger.info("Censoring file: " + filter.getUUID());
             filter.printOut();
             if(ReplaceLine(filter, filter.secret, filter.placeHolder)){
-                System.out.println("File " + filter.getUUID() + " was not censored!");
+                logger.error("File " + filter.getUUID() + " was not censored!");
             }else{
-                System.out.println("File " + filter.getUUID() + " was censored!");
+                logger.info("File " + filter.getUUID() + " was censored!");
                 filter.setFiltered(true);
             }
         }
@@ -27,17 +28,16 @@ public class Replace {
     public static void openFiles(){
         for(Filter filter: filters){
             String activeFileID = filter.filePath + ":" + filter.getAdjustedLine();
-            System.out.println("Opening file: " + activeFileID);
+            logger.debug("Opening file: " + activeFileID);
             filter.printOut();
             if(ReplaceLine(filter, filter.placeHolder, filter.secret)){
-                System.out.println("File " + filter.getUUID() + " was not opened!");
+                logger.error("File " + filter.getUUID() + " was not opened!");
             }else{
-                System.out.println("File " + filter.getUUID() + " was opened!");
+                logger.error("File " + filter.getUUID() + " was opened!");
                 filter.setFiltered(true);
             }
         }
         countFiltered();
-
     }
 
     public static void countFiltered(){
@@ -47,21 +47,21 @@ public class Replace {
                 count++;
             }
         }
-        System.out.println("Filtered " + count + " files out of " + filters.size() + " defined filters.");
+        logger.info("Filtered " + count + " files out of " + filters.size() + " defined filters.");
         if(count == filters.size()){
-            System.out.println("All files have been filtered");
+            logger.info("All files have been filtered");
         }else if(count == 0){
-            System.out.println("No files have been filtered");
+            logger.fatal("No files have been filtered");
             for(Filter filter: filters){
                 if(!filter.filtered){
-                    System.out.println(filter.getUUID());
+                    logger.error(filter.getUUID());
                 }
             }
         } else if (count < filters.size()) {
-            System.out.println("Not all files have been filtered!");
+            logger.warn("Not all files have been filtered!");
             for(Filter filter: filters){
                 if(!filter.filtered){
-                    System.out.println(filter.getUUID());
+                    logger.warn(filter.getUUID());
                 }
             }
         }
@@ -70,21 +70,21 @@ public class Replace {
     public static boolean ReplaceLine(Filter filter,String target, String replacement){
         try (Stream<String> all_lines = Files.lines(Paths.get(filter.filePath))) {
             String input = all_lines.skip(filter.getAdjustedLine()).findFirst().get();
-            System.out.println("input: "+ input);
+            logger.debug("input: "+ input);
             String output = input.replace(target,replacement);
-            System.out.println("output: "+ output + " *");
-            System.out.println("---");
+            logger.debug("output: "+ output + " *");
+            logger.debug("---");
             WriteLine(filter.getAdjustedLine(),filter.filePath,output);
             return input.equals(output);
         }catch (NoSuchElementException e){
-            System.out.println("Line "+ filter.lineNumber +" not found");
-            System.out.println(filter.getUUID() +" will not be modified!");
-            System.out.println("---");
+            logger.debug("Line "+ filter.lineNumber +" not found");
+            logger.debug(filter.getUUID() +" will not be modified!");
+            logger.debug("---");
             return true;
         }catch (IOException e){
-            System.out.println("Error reading file: " + filter.filePath);
-            System.out.println(filter.getUUID() + " will not be modified!");
-            System.out.println("---");
+            logger.debug("Error reading file: " + filter.filePath);
+            logger.debug(filter.getUUID() + " will not be modified!");
+            logger.debug("---");
             return true;
         }
     }
