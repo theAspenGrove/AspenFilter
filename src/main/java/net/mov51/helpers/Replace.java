@@ -1,10 +1,7 @@
 package net.mov51.helpers;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.NoSuchElementException;
-import java.util.stream.Stream;
 
 import static net.mov51.Main.logger;
 import static net.mov51.helpers.fileUtil.filters;
@@ -13,29 +10,20 @@ import static net.mov51.helpers.fileUtil.WriteLine;
 public class Replace {
     public static void censorFiles(){
         for(Filter filter: filters){
-            logger.info("Censoring file: " + filter.getUUID());
+            logger.info("Opening file: " + filter.getUUID());
             filter.printOut();
-            if(ReplaceLine(filter, filter.secret, filter.placeHolder)){
-                logger.error("File " + filter.getUUID() + " was not censored!");
-            }else{
-                logger.info("File " + filter.getUUID() + " was censored!");
-                filter.setFiltered(true);
-            }
+            filter.setFiltered(
+                    ReplaceLine(filter, true));
         }
         countFiltered();
     }
 
     public static void openFiles(){
         for(Filter filter: filters){
-            String activeFileID = filter.filePath + ":" + filter.getAdjustedLine();
-            logger.debug("Opening file: " + activeFileID);
+            logger.info("Opening file: " + filter.getUUID());
             filter.printOut();
-            if(ReplaceLine(filter, filter.placeHolder, filter.secret)){
-                logger.error("File " + filter.getUUID() + " was not opened!");
-            }else{
-                logger.error("File " + filter.getUUID() + " was opened!");
-                filter.setFiltered(true);
-            }
+            filter.setFiltered(
+                    ReplaceLine(filter, false));
         }
         countFiltered();
     }
@@ -67,26 +55,33 @@ public class Replace {
         }
     }
 
-    public static boolean ReplaceLine(Filter filter,String target, String replacement){
-        try (Stream<String> all_lines = Files.lines(Paths.get(filter.filePath))) {
-            String input = all_lines.skip(filter.getAdjustedLine()).findFirst().get();
-            logger.debug("input: "+ input);
-            String output = input.replace(target,replacement);
-            logger.debug("output: "+ output + " *");
-            logger.debug("---");
-            WriteLine(filter.getAdjustedLine(),filter.filePath,output);
-            return input.equals(output);
-        }catch (NoSuchElementException e){
-            logger.debug("Line "+ filter.lineNumber +" not found");
-            logger.debug(filter.getUUID() +" will not be modified!");
-            logger.debug("---");
-            return true;
-        }catch (IOException e){
-            logger.debug("Error reading file: " + filter.filePath);
-            logger.debug(filter.getUUID() + " will not be modified!");
-            logger.debug("---");
-            return true;
+    public static boolean ReplaceLine(Filter filter, boolean censor){
+        String input = filter.getFileLine();
+        String output = "";
+        if(censor && input.contains(filter.placeHolder)){
+            if(input.contains(filter.placeHolder)) {
+                logger.error("File already contains placeholder! " + filter.getUUID());
+                return false;
+            }
+            logger.debug("input: "+ filter.secret);
+            output = input.replace(filter.secret,filter.placeHolder);
+        } else if ((!censor) && input.contains(filter.secret)) {
+            if(input.contains(filter.secret)) {
+                logger.error("File already contains secret! " + filter.getUUID());
+                return false;
+            }
+            logger.debug("input: "+ filter.placeHolder);
+            output = input.replace(filter.placeHolder,filter.secret);
         }
+        try {
+            WriteLine(filter.getAdjustedLine(),filter.filePath,output);
+            return true;
+        } catch (IOException e) {
+            logger.error("Could not write to file: " + filter.filePath);
+        } catch (NoSuchElementException e){
+            logger.debug("Line "+ filter.lineNumber +" not found");
+        }
+        return false;
     }
 
 }

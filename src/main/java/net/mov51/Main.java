@@ -3,6 +3,8 @@ package net.mov51;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import static net.mov51.helpers.Replace.censorFiles;
+import static net.mov51.helpers.Replace.openFiles;
 import static net.mov51.helpers.fileUtil.defaultFilePath;
 import static net.mov51.helpers.fileUtil.loadYaml;
 
@@ -11,7 +13,6 @@ public class Main {
     public static final Logger logger = LogManager.getRootLogger();
     public static void main(String[] args){
         logger.info("Starting up");
-
 
         if(args.length > 0){
             if(args.length == 1){
@@ -33,12 +34,12 @@ public class Main {
     public static void run(String state,String filePath){
         if(state.equals("open")){
             loadYaml(filePath);
-            logger.info("Censoring files");
-            net.mov51.helpers.Replace.openFiles();
+            logger.info("Opening files");
+            openFiles();
         }else if(state.equals("censor")){
             loadYaml(filePath);
             logger.info("Censoring files");
-            net.mov51.helpers.Replace.censorFiles();
+            censorFiles();
         }else{
             logger.error("Invalid argument");
         }
