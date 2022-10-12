@@ -15,10 +15,11 @@ public class Filter {
     public int lineNumber;
     public boolean filtered;
     public void printOut(){
-        logger.debug(this.placeHolder);
-        logger.debug(this.secret);
-        logger.debug(this.filePath);
-        logger.debug(this.lineNumber);
+        logger.debug("PlaceHolder: " + this.placeHolder);
+        logger.debug("Secret: " + this.secret);
+        logger.debug("FilePath: " + this.filePath);
+        logger.debug("Internal Line Number: " + this.lineNumber);
+        logger.debug("Adjusted Line Number: " + this.getAdjustedLine());
         logger.debug("---");
     }
 
@@ -26,16 +27,16 @@ public class Filter {
         Stream<String> allLines;
         try {
             allLines = Files.lines(Paths.get(this.filePath));
+            return allLines.skip(this.getAdjustedLine()).findFirst().get();
         } catch (IOException e) {
             logger.error("Could not open file: " + this.filePath);
             logger.debug(this.getUUID() +" will not be modified!");
             return "";
         } catch (NoSuchElementException e){
-            logger.debug("Line "+ this.lineNumber +" not found");
+            logger.debug("Line "+ this.getAdjustedLine() +" not found");
             logger.debug(this.getUUID() +" will not be modified!");
             return "";
         }
-        return allLines.skip(this.getAdjustedLine()).findFirst().get();
     }
 
     public void setFiltered(boolean filtered){

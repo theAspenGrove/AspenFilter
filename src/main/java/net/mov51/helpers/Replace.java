@@ -49,7 +49,7 @@ public class Replace {
             logger.warn("Not all files have been filtered!");
             for(Filter filter: filters){
                 if(!filter.filtered){
-                    logger.warn(filter.getUUID());
+                    logger.warn(filter.getUUID() + " has not been filtered");
                 }
             }
         }
@@ -57,21 +57,25 @@ public class Replace {
 
     public static boolean ReplaceLine(Filter filter, boolean censor){
         String input = filter.getFileLine();
-        String output = "";
-        if(censor && input.contains(filter.placeHolder)){
+        String output;
+        if(censor){
             if(input.contains(filter.placeHolder)) {
                 logger.error("File already contains placeholder! " + filter.getUUID());
                 return false;
             }
-            logger.debug("input: "+ filter.secret);
+            logger.debug("secret: "+ filter.secret);
+            logger.debug("input: "+ input);
             output = input.replace(filter.secret,filter.placeHolder);
-        } else if ((!censor) && input.contains(filter.secret)) {
+            logger.debug("output: "+ output);
+        } else {
             if(input.contains(filter.secret)) {
                 logger.error("File already contains secret! " + filter.getUUID());
                 return false;
             }
-            logger.debug("input: "+ filter.placeHolder);
+            logger.debug("placeholder: "+ filter.placeHolder);
+            logger.debug("input: "+ input);
             output = input.replace(filter.placeHolder,filter.secret);
+            logger.debug("output: "+ output);
         }
         try {
             WriteLine(filter.getAdjustedLine(),filter.filePath,output);
@@ -79,7 +83,7 @@ public class Replace {
         } catch (IOException e) {
             logger.error("Could not write to file: " + filter.filePath);
         } catch (NoSuchElementException e){
-            logger.debug("Line "+ filter.lineNumber +" not found");
+            logger.error("Line "+ filter.getAdjustedLine() +" not found");
         }
         return false;
     }

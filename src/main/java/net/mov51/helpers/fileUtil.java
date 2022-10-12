@@ -22,7 +22,12 @@ public class fileUtil {
         Path path = Paths.get(filePath);
         List<String> lines = Files.readAllLines(path);
         lines.set(line, newLine);
-        Files.write(path, lines);
+        try {
+            logger.debug("Writing to file: " + filePath);
+            Files.write(path, lines);
+        } catch (IOException e) {
+            logger.error("Failed to write to file: " + filePath);
+        }
     }
 
     public static void loadYaml(String filePath){
